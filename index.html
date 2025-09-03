@@ -7,11 +7,12 @@
 		<title>Cedar Gate Map Demo</title>
 		<script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
 		<!-- <script src="https://unpkg.com/aframe-environment-component@1.5.x/dist/aframe-environment-component.min.js"></script> -->
+		<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
 	</head>
 	<body>
 		<section class="section-map">
-			<div class="section-map__wrapper">
-				<a-scene environment="preset: moon;">
+			<div class="section-map__scene-wrapper">
+				<a-scene id="scene" class="section-map__scene" environment="preset: moon;" embedded xr-mode-ui="enabled: false">
 					<a-assets timeout="10000">
 						<a-asset-item id="map-asset" src="/models/map.glb"></a-asset-item>
 					</a-assets>
@@ -19,18 +20,65 @@
 					<a-entity
 						id="camera"
 						camera
-						position="0 1 2"
-						look-controls="enabled: true"
+						position="0 5 2.6"
+						look-controls="enabled: false;"
 					></a-entity>
 
-					<a-entity
-						id="map"
-						gltf-model="#map-asset"
-						position="0 0.1 0"
-						rotation="0 0 0"
-						scale="1 1 1"
-						shadow
-					></a-entity>
+					<a-entity id="map-pivot" rotation="0 -49.9 0">
+						<a-entity
+							id="map"
+							gltf-model="#map-asset"
+							position="-3.6 0 -1.3"
+							scale="1 1 1"
+							shadow
+						>
+							<a-cylinder
+								id="pin-anchor-1"
+								position="4.16 0 4.30"
+								height="0.5"
+								radius="0.01"
+								color="red"
+								visible="false"
+								move-pin="targetId: pin-1;"
+							></a-cylinder>
+							<a-cylinder
+								id="pin-anchor-2"
+								position="3 0 -0.03"
+								height="0.5"
+								radius="0.01"
+								color="red"
+								visible="false"
+								move-pin="targetId: pin-2;"
+							></a-cylinder>
+							<a-cylinder
+								id="pin-anchor-3"
+								position="3.7 0 -1.03"
+								height="0.5"
+								radius="0.01"
+								color="red"
+								visible="false"
+								move-pin="targetId: pin-3;"
+							></a-cylinder>
+							<a-cylinder
+								id="pin-anchor-4"
+								position="7.94 0 0.45"
+								height="0.5"
+								radius="0.01"
+								color="red"
+								visible="false"
+								move-pin="targetId: pin-4;"
+							></a-cylinder>
+							<a-cylinder
+								id="pin-anchor-5"
+								position="6.03 0 -2.94"
+								height="0.5"
+								radius="0.01"
+								color="red"
+								visible="false"
+								move-pin="targetId: pin-5;"
+							></a-cylinder>
+						</a-entity>
+					</a-entity>
 
 					<a-entity
 						id="hemisphere-light"
@@ -41,17 +89,34 @@
 					<a-entity
 						id="directional-light"
 						position="0.5 1 0"
-						light="intensity: 1.884; shadowCameraTop: 10; shadowCameraRight: 10; shadowCameraBottom: -10; shadowCameraLeft: -10"
+						light="intensity: 1.884; castShadow: true; shadowBias: -0.00005; shadowCameraTop: 10; shadowCameraRight: 10; shadowCameraBottom: -10; shadowCameraLeft: -10"
 					></a-entity>
 
-					<a-sky
-						radius="200"
-						theta-length="110"
-						material="shader: gradientshader; topColor: #000000; bottomColor: #000000;"
-					></a-sky>
+					<a-sky	material="shader: gradientshader; topColor: #000000; bottomColor: #000000;"></a-sky>
 				</a-scene>
 			</div>
+
+			<div class="section-map__pins-wrapper">
+				<div id="pin-1" class="section-map__pin pin">
+					<button class="pin__button" aria-label="Open modal" data-anchor-id="pin-anchor-1"></button>
+				</div>
+				<div id="pin-2" class="section-map__pin pin">
+					<button class="pin__button" aria-label="Open modal" data-anchor-id="pin-anchor-2"></button>
+				</div>
+				<div id="pin-3" class="section-map__pin pin">
+					<button class="pin__button" aria-label="Open modal" data-anchor-id="pin-anchor-3"></button>
+				</div>
+				<div id="pin-4" class="section-map__pin pin">
+					<button class="pin__button" aria-label="Open modal" data-anchor-id="pin-anchor-4"></button>
+				</div>
+				<div id="pin-5" class="section-map__pin pin">
+					<button class="pin__button" aria-label="Open modal" data-anchor-id="pin-anchor-5"></button>
+				</div>
+			</div>
 		</section>
+
+		<button id="reset-camera-button">Move Camera To Default</button>
+
 		<script type="module" src="/src/main.js"></script>
 	</body>
 </html>
