@@ -28,7 +28,7 @@ class MapController {
 		hemisphereLightEl: document.getElementById("hemisphere-light"),
 		directionalLightEl: document.getElementById("directional-light"),
 		cameraLookAt: new THREE.Vector3(),
-		debug: true,
+		debug: false,
 	};
 	_defaultCameraPosition = new THREE.Vector3();
 
