@@ -194,21 +194,35 @@ class MapController {
 			MapController.loadTweakpane().then((Pane) => {
 				this._debugPanel = new Pane({ title: "Settings", expanded: false });
 
-				this._setCameraFolder();
-				this._setMapFolder();
-				this._setPinAnchorsFolder();
-				this._setHemisphereLightFolder();
-				this._setDirectionalLightFolder();
+				if (this._options.sceneEl.hasLoaded) {
+					this._setCameraFolder();
+					this._setMapFolder();
+					this._setPinAnchorsFolder();
+					this._setHemisphereLightFolder();
+					this._setDirectionalLightFolder();
+				} else {
+					this._options.sceneEl.addEventListener('loaded', () => {
+						this._setCameraFolder();
+						this._setMapFolder();
+						this._setPinAnchorsFolder();
+						this._setHemisphereLightFolder();
+						this._setDirectionalLightFolder();
+					});
+				}
 			});
 		}
 
-		this._defaultCameraPosition = this._options.cameraEl.getAttribute('position');
-
-		MapController.waitForComponentInit(this._options.cameraEl, "camera", () => {
+		if (this._options.sceneEl.hasLoaded) {
+			this._defaultCameraPosition = this._options.cameraEl.getAttribute('position');
 			this._rotateCameraToDefault();
-		});
-
-		this._addListeners();
+			this._addListeners();
+		} else {
+			this._options.sceneEl.addEventListener('loaded', () => {
+				this._defaultCameraPosition = this._options.cameraEl.getAttribute('position');
+				this._rotateCameraToDefault();
+				this._addListeners();
+			});
+		}
 	}
 
 	moveCameraToDefault() {
