@@ -18,8 +18,8 @@
 
 					<a-entity
 						id="camera"
-						camera
-						position="0 5 2.6"
+						camera="fov: 21.35;"
+						position="0.34 6.11 16.01"
 						look-controls="enabled: false;"
 					></a-entity>
 
@@ -81,14 +81,14 @@
 
 					<a-entity
 						id="hemisphere-light"
-						position="0 50 0"
-						light="color: #808080; groundColor: #D1D1D1; intensity: 1.884; type: hemisphere"
+						position="-70 -100 0"
+						light="color: #9d9d9d; groundColor: #D1D1D1; intensity: 5; type: hemisphere"
 					></a-entity>
 
 					<a-entity
 						id="directional-light"
-						position="5.3 5 0"
-						light="intensity: 1.884; castShadow: true; shadowBias: -0.00013; shadowCameraTop: 10; shadowCameraRight: 10; shadowCameraBottom: -10; shadowCameraLeft: -10"
+						position="5 10 -5"
+						light="intensity: 3; castShadow: true; shadowBias: -0.00013; shadowCameraTop: 10; shadowCameraRight: 10; shadowCameraBottom: -10; shadowCameraLeft: -10"
 					></a-entity>
 
 					<a-sky	material="shader: gradientshader; topColor: #000000; bottomColor: #000000;"></a-sky>
