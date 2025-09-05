@@ -27,6 +27,7 @@ class MapController {
 		pinEls: document.querySelectorAll("[id^=pin]"),
 		hemisphereLightEl: document.getElementById("hemisphere-light"),
 		directionalLightEl: document.getElementById("directional-light"),
+		skyEl: document.getElementById("sky"),
 		cameraLookAt: { x: 0, y: 0, z: 0 },
 		debug: false,
 	};
@@ -190,6 +191,28 @@ class MapController {
 		}
 	}
 
+	_setSkyFolder() {
+		if (this._options.skyEl) {
+			const material = this._options.skyEl.getAttribute('material');
+			const folder = this._debugPanel.addFolder({
+				title: "Sky",
+				expanded: false,
+			});
+
+			[
+				{ object: material, key: 'topColor' },
+				{ object: material, key: 'bottomColor' },
+			].forEach(({object, key, params}) => {
+				folder.addBinding(object, key).on('change', ({ value }) => {
+					this._options.skyEl.setAttribute('material', {
+						...this._options.skyEl.getAttribute('material'),
+						[key]: value,
+					});
+				});
+			});
+		}
+	}
+
 	_addListeners() {
 		this._options.pinEls.forEach((pinAnchor) => {
 			pinAnchor.addEventListener('click', (event) => {
@@ -212,6 +235,7 @@ class MapController {
 		this._setPinAnchorsFolder();
 		this._setHemisphereLightFolder();
 		this._setDirectionalLightFolder();
+		this._setSkyFolder();
 	}
 
 	_onSceneLoaded() {
