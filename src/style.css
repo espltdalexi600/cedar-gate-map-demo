@@ -12,6 +12,7 @@ body {
 
 .section-map {
 	position: relative;
+	overflow: hidden;
 }
 
 /*.section-map::before,*/

@@ -35,7 +35,7 @@ AFRAME.registerComponent('move-to-target', {
 	buildCurve(startPos, endPos, offsetY = 0, radius = 0) {
 		const { debug } = this.data;
 		const startPoint = new THREE.Vector3(startPos.x, startPos.y, startPos.z);
-		const v1 = this.getControlPoint(startPos, endPos, 1);
+		const v1 = this.getControlPoint(startPos, endPos, 0.5);
 		const endPoint = new THREE.Vector3(endPos.x, endPos.y + offsetY, endPos.z);
 
 		const ort = new THREE.Vector2(
@@ -87,7 +87,7 @@ AFRAME.registerComponent('move-to-target', {
 
 		this.tween && this.tween.kill();
 		this.tween = gsap.to(proxy, {
-			duration: curveLength / 2,
+			duration: curveLength / 4,
 			value: 1,
 			ease: Power1.easeInOut,
 			onUpdate: function (camera) {
