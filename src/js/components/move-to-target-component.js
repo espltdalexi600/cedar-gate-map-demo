@@ -24,7 +24,7 @@ AFRAME.registerComponent('move-to-target', {
 			this.el.getAttribute('position'),
 			this.targetPosition,
 			1,
-			1
+			3
 		);
 
 		this.moveCamera({ path: curve, target: this.targetPosition });
