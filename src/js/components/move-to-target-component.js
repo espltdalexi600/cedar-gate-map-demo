@@ -76,14 +76,10 @@ AFRAME.registerComponent('move-to-target', {
 		const proxy = { value: 0 };
 		const q1 = new THREE.Quaternion().copy(self.camera.quaternion);
 		const endPos = path.getPointAt(1);
-		const tempObject = new THREE.Object3D();
-		tempObject.position.copy(self.el.getAttribute('position'));
-		tempObject.quaternion.copy(self.camera.quaternion);
-		self.el.setAttribute('position', endPos);
-		self.camera.lookAt(target);
-		const q2_precalc = new THREE.Quaternion().copy(self.camera.quaternion);
-		self.el.setAttribute('position', tempObject.position);
-		self.camera.quaternion.copy(tempObject.quaternion);
+
+		const lookMatrix = new THREE.Matrix4();
+		lookMatrix.lookAt(endPos, target, new THREE.Vector3(0, 1, 0));
+		const q2_precalc = new THREE.Quaternion().setFromRotationMatrix(lookMatrix);
 
 		this.tween && this.tween.kill();
 		this.tween = gsap.to(proxy, {
@@ -92,9 +88,9 @@ AFRAME.registerComponent('move-to-target', {
 			ease: Power1.easeInOut,
 			onUpdate: function (camera) {
 				const pos = path.getPointAt(proxy.value);
-				self.el.setAttribute('position', pos);
-				self.camera.lookAt(target);
-				const q2_onupdate = new THREE.Quaternion().copy(self.camera.quaternion);
+				self.el.object3D.position.copy(pos);
+				camera.lookAt(target);
+				const q2_onupdate = new THREE.Quaternion().copy(camera.quaternion);
 				const q2 = new THREE.Quaternion().copy(q2_precalc);
 				q2.slerp(q2_onupdate, proxy.value * proxy.value * proxy.value);
 
@@ -105,7 +101,7 @@ AFRAME.registerComponent('move-to-target', {
 		});
 	},
 	moveCameraToDefault() {
-		const { target, initialPosition } = this.data;
+		const { target, initialPosition } = this.data;		
 		const curve = this.buildCurve(this.el.getAttribute('position'), initialPosition);
 
 		this.moveCamera({
