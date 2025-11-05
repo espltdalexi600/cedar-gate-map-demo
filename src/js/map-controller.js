@@ -29,12 +29,18 @@ class MapController {
 		directionalLightEl: document.getElementById("directional-light"),
 		skyEl: document.getElementById("sky"),
 		cameraLookAt: { x: 0, y: 0, z: 0 },
+		areaLabels: [],
 		debug: false,
 	};
 	_defaultCameraPosition = new THREE.Vector3();
+	_areas = [];
+	_tweens = {};
 
 	constructor(options = {}) {
 		Object.assign(this._options, options);
+
+		this._onSceneLoaded = this._onSceneLoaded.bind(this);
+		this._onMapModelLoaded = this._onMapModelLoaded.bind(this);
 
 		this._init();
 	}
@@ -174,8 +180,8 @@ class MapController {
 				{ object: light, key: 'intensity', params: { step: 0.1 } },
 				{ object: light, key: 'color' },
 				{ object: light, key: 'castShadow' },
-				{ object: light, key: 'shadowBias', params: { step: 0.00001 } },
 				{ object: light, key: 'shadowRadius' },
+				{ object: light, key: 'shadowBias', params: { step: 0.00001 } },
 			].forEach(({object, key, params}) => {
 				folder.addBinding(object, key, params).on('change', ({ value }) => {
 					this._options.directionalLightEl.setAttribute('light', {
@@ -184,6 +190,8 @@ class MapController {
 					});
 				});
 			});
+
+			folder.addBinding(this._options.directionalLightEl.getObject3D('light').shadow, 'normalBias', { step: 0.001 });
 		}
 	}
 
@@ -209,6 +217,14 @@ class MapController {
 		}
 	}
 
+	_highlightArea(area, { opacity = 0.2, duration = 1 } = {}) {
+		this._tweens[area.name]?.kill();
+		this._tweens[area.name] = gsap.to(area.material, {
+			opacity,
+			duration,
+		});
+	}
+
 	_addListeners() {
 		this._options.pinEls.forEach((pinAnchor) => {
 			pinAnchor.addEventListener('click', (event) => {
@@ -221,6 +237,11 @@ class MapController {
 					},
 					debug: this._options.debug,
 				});
+
+				const area = this._areas.find(({ name }) => name === event.target.dataset.area);
+				if (area) {
+					this._highlightArea(area);
+				}
 			});
 		});
 	}
@@ -236,8 +257,20 @@ class MapController {
 
 	_onSceneLoaded() {
 		this._defaultCameraPosition.copy(this._options.cameraEl.getObject3D('camera').position);
+		this._options.directionalLightEl.getObject3D('light').shadow.normalBias = 0.034;
 		this._rotateCameraToDefault();
 		this._addListeners();
+	}
+
+	_onMapModelLoaded() {
+		const mapModel = this._options.mapEl.getObject3D('mesh');
+		this._options.areaLabels.forEach((label) => {
+			const mesh = mapModel.getObjectByName(label);
+			if (mesh) {
+				this._areas.push(mesh);
+				this._highlightArea(mesh, { opacity: 0, duration: 0 });
+			}
+		});
 	}
 
 	_init() {
@@ -258,14 +291,19 @@ class MapController {
 		if (this._options.sceneEl.hasLoaded) {
 			this._onSceneLoaded();
 		} else {
-			this._options.sceneEl.addEventListener('loaded', () => {
-				this._onSceneLoaded();
-			});
+			this._options.sceneEl.addEventListener('loaded', this._onSceneLoaded);
+		}
+
+		if (this._options.mapEl.getObject3D('mesh')) {
+			this._onMapModelLoaded();
+		} else {
+			this._options.mapEl.addEventListener('model-loaded', this._onMapModelLoaded);
 		}
 	}
 
 	moveCameraToDefault() {
 		this._options.cameraEl.removeAttribute("move-to-target");
+		this._areas.forEach((area) => this._highlightArea(area, { opacity: 0 }));
 	}
 }
 
