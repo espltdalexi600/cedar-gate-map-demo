@@ -16,17 +16,18 @@ AFRAME.registerComponent('move-to-target', {
 		}
 
 		this.scene = this.el.sceneEl.object3D;
-		this.camera = this.el.getObject3D("camera");
+		this.camera = this.el.getObject3D('camera');
 		this.targetPosition = new THREE.Vector3();
 		this.targetEl.object3D.getWorldPosition(this.targetPosition);
 
 		const curve = this.buildCurve(
-			this.el.getAttribute('position'),
+			this.camera.position,
 			this.targetPosition,
 			1,
 			3
 		);
 
+		this.el.pause();
 		this.moveCamera({ path: curve, target: this.targetPosition });
 	},
 	remove() {
@@ -64,7 +65,7 @@ AFRAME.registerComponent('move-to-target', {
 					opacity: 1,
 				})
 			);
-			curveObject.name = "debug_line";
+			curveObject.name = 'debug_line';
 			this.scene.add(curveObject);
 		}
 
@@ -88,7 +89,7 @@ AFRAME.registerComponent('move-to-target', {
 			ease: Power1.easeInOut,
 			onUpdate: function (camera) {
 				const pos = path.getPointAt(proxy.value);
-				self.el.object3D.position.copy(pos);
+				camera.position.copy(pos);
 				camera.lookAt(target);
 				const q2_onupdate = new THREE.Quaternion().copy(camera.quaternion);
 				const q2 = new THREE.Quaternion().copy(q2_precalc);
@@ -101,13 +102,15 @@ AFRAME.registerComponent('move-to-target', {
 		});
 	},
 	moveCameraToDefault() {
-		const { target, initialPosition } = this.data;		
-		const curve = this.buildCurve(this.el.getAttribute('position'), initialPosition);
+		const { target, initialPosition } = this.data;
+		const curve = this.buildCurve(this.camera.position, initialPosition);
 
 		this.moveCamera({
 			path: curve,
 			target: new THREE.Vector3(target.x, target.y, target.z),
-			onComplete: () => {},
+			onComplete: () => {
+				this.el.play();
+			},
 		});
 	},
 	shortestAngle(start, end) {

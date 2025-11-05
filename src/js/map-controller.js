@@ -40,7 +40,7 @@ class MapController {
 	}
 
 	_rotateCameraToDefault() {
-		const camera = this._options.cameraEl.getObject3D("camera");
+		const camera = this._options.cameraEl.getObject3D('camera');
 		if (camera) {
 			const coords = this._options.cameraLookAt;
 			camera.lookAt(coords.x, coords.y, coords.z);
@@ -49,17 +49,13 @@ class MapController {
 
 	_setCameraFolder() {
 		if (this._options.cameraEl) {
-			const options = {
-				position: this._options.cameraEl.getAttribute('position'),
-			};
 			const camera = this._options.cameraEl.getAttribute('camera');
 			const folder = this._debugPanel.addFolder({
 				title: "Camera",
 				expanded: false,
 			});
 
-			folder.addBinding(options, 'position').on('change', ({ value }) => {
-				this._options.cameraEl.setAttribute('position', value);
+			folder.addBinding(this._options.cameraEl.getObject3D('camera'), 'position').on('change', ({ value }) => {
 				this._rotateCameraToDefault();
 			});
 
@@ -239,15 +235,13 @@ class MapController {
 	}
 
 	_onSceneLoaded() {
-		this._defaultCameraPosition = this._options.cameraEl.getAttribute('position');
+		this._defaultCameraPosition.copy(this._options.cameraEl.getObject3D('camera').position);
 		this._rotateCameraToDefault();
 		this._addListeners();
 	}
 
 	_init() {
 		if (this._options.debug) {
-			this._options.cameraEl.setAttribute('look-controls', { enabled: true });
-
 			MapController.loadTweakpane().then((Pane) => {
 				this._debugPanel = new Pane({ title: "Settings", expanded: false });
 
