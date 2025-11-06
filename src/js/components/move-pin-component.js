@@ -15,6 +15,7 @@ AFRAME.registerComponent('move-pin', {
 		this.worldPosition = new THREE.Vector3();
 	},
 	tick() {
+		this.camera.updateMatrixWorld();
 		this.el.object3D.getWorldPosition(this.worldPosition);
 
 		const screenPosition = this.worldPosition.clone().project(this.camera);
