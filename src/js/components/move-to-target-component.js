@@ -108,10 +108,12 @@ AFRAME.registerComponent('move-to-target', {
 		const { target, initialPosition } = this.data;
 		const curve = this.buildCurve(this.camera.position, initialPosition);
 
+		this.el.pause();
 		this.moveCamera({
 			path: curve,
 			target: new THREE.Vector3(target.x, target.y, target.z),
 			onComplete: () => {
+				this.el.setAttribute('orbit-controls', { target });
 				this.el.play();
 			},
 		});
