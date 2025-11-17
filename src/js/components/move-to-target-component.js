@@ -28,7 +28,10 @@ AFRAME.registerComponent('move-to-target', {
 		);
 
 		this.el.pause();
-		this.moveCamera({ path: curve, target: this.targetPosition });
+		this.moveCamera({ path: curve, target: this.targetPosition, onComplete: () => {
+			this.el.setAttribute('orbit-controls', { target: this.targetPosition });
+			this.el.play();
+		} });
 	},
 	remove() {
 		this.moveCameraToDefault();
